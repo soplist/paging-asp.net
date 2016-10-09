@@ -6,13 +6,28 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-public partial class _Default : Page
+public partial class _Default : BasePage
 {
+    private string CultureLang = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!Page.IsPostBack)
         {
             dlBind();
+            CultureLang = Session["PreferredCulture"].ToString().ToLower().Trim();
+            switch (CultureLang)
+            {
+                case "zh-cn":
+                    this.DropDownList1.Items.FindByText("简体中文").Selected = true;
+                    Session["PreferredCulture"] = "zh-cn";
+                    break;
+                case "en-us":
+                    this.DropDownList1.Items.FindByText("English").Selected = true;
+                    Session["PreferredCulture"] = "en-us";
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -69,4 +84,11 @@ public partial class _Default : Page
         this.dlBind();
 
     }
+
+    protected void DropDownList1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        Session["PreferredCulture"] = DropDownList1.SelectedValue;
+        Response.Redirect(Request.Url.PathAndQuery);
+    }
+    
 }
